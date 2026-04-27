@@ -88,7 +88,8 @@ print("Mapping ICD9 codes to PheCodes")
 
 # read UKB coding
 ICD9codes <- fread("./data/coding87.tsv")
-ICD9codes[!grepl("Block",coding),ICD9:=sapply(coding,harmonizeICD9)]
+ICD9codes <- ICD9codes[!grepl("^(Block|Chapter)", coding),]
+ICD9codes[,ICD9:=sapply(coding,harmonizeICD9)]
 codeICD9 <- ICD9codes[,sort(unique(ICD9))]
 
 mappedICD9Codes <- NULL
