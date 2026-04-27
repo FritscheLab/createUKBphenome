@@ -13,13 +13,21 @@
 - parallel
 - intervals
 - htmltab
+- XML
+- RCurl
+- rlist
 - bitops
 
-## Step 1: Describe your data
+## Step 1: Prepare required inputs
+Clone the [PheWAS repository](https://github.com/PheWAS/PheWAS) into the project root as `./PheWAS/`. The script tries to download it automatically, but setting it up manually ahead of time is more reliable.
+
+Add a genotype `.fam` file to `./data/` so the script can read genetic sex information. The filename must match the pattern used in the script, for example `ukb.12345_cal_chr1_v3.fam`.
+
+## Step 2: Describe your data
 Add the absolute paths (e.g. `/driveA/UKB/ukb####.tab`) of your TAB-delimited UKB baskets to a single text file `./data/baskets.txt`
 Add the latest file with withdrawn samples 'w#####_########.csv' to './data/' folder
 
-## Step 2: Create Phenome
+## Step 3: Create Phenome
 `cd createUKBphenome`  
 `Rscript ./scripts/function.createUKBphenome.r`
 
