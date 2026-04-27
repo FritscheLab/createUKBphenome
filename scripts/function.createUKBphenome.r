@@ -94,7 +94,8 @@ codeICD9 <- ICD9codes[,sort(unique(ICD9))]
 mappedICD9Codes <- NULL
 icd9map_new <- list()
 for(i in 1:nrow(icd9map)){
-	mapped9 <- grep(icd9map$ICD9[i],codeICD9)
+	pattern9 <- paste0("^", gsub("([][{}()+*^$|\\?.])", "\\\\\\1", icd9map$ICD9[i]), "(\\.|$)")
+	mapped9 <- grep(pattern9,codeICD9)
 	if(length(mapped9) > 0) {
 		mappedICD9Codes <- unique(c(mappedICD9Codes,codeICD9[mapped9]))
 		icd9map_new[[icd9map$ICD9[i]]] <- data.table(
@@ -107,17 +108,17 @@ icd9unmapped <- codeICD9[!codeICD9 %in% mappedICD9Codes]
 
 # roll up PheWAS codes
 icd9key$added <- "original"
-pcodes <- unique(c(icd9key$phecode,gsub("\\..+","",icd9key$phecode),gsub("(\\..).","\\1",icd9key$phecode)))
-pcodes <- sort(pcodes)
+pcodes_raw <- unique(c(icd9key$phecode,gsub("\\..+","",icd9key$phecode),gsub("(\\..).","\\1",icd9key$phecode)))
+pcodes <- sort(intersect(pcodes_raw, unique(pheinfo$phecode)))
 
 for(p in 1:length(pcodes)){
     if(grepl("\\.",pcodes[p])) {
         iSub <- which(icd9key$phecode %in% pcodes[which(grepl(paste0("^",pcodes[p]),pcodes)
-        				& nchar(pcodes) > nchar(pcodes[p]))]
-        				& !icd9key$phecode %in% norollup)
+        					& nchar(pcodes) > nchar(pcodes[p]))]
+        					& !icd9key$phecode %in% norollup)
     } else {
         iSub <- which(icd9key$phecode %in% pcodes[grep(paste0("^",pcodes[p],"\\."),pcodes)]
-        				& !icd9key$phecode %in% norollup)
+        					& !icd9key$phecode %in% norollup)
     }
     if(length(iSub) == 0) next
     iTop <- icd9key$ICD9[which(icd9key$phecode == pcodes[p])]
@@ -172,16 +173,16 @@ icd10unmapped <- codeICD10[!codeICD10 %in% mappedICD10Codes]
 
 #### roll up phewas codes
 icd10key$added <- "original"
-pcodes <- unique(c(icd10key$phecode,gsub("\\..+","",icd10key$phecode),gsub("(\\..).","\\1",icd10key$phecode)))
-pcodes <- sort(pcodes)
+pcodes_raw <- unique(c(icd10key$phecode,gsub("\\..+","",icd10key$phecode),gsub("(\\..).","\\1",icd10key$phecode)))
+pcodes <- sort(intersect(pcodes_raw, unique(pheinfo$phecode)))
 for(p in 1:length(pcodes)){
     if(grepl("\\.",pcodes[p])) {
         iSub <- which(icd10key$phecode %in% pcodes[which(grepl(paste0("^",pcodes[p]),pcodes)
-        				& nchar(pcodes) > nchar(pcodes[p]))]
-        				& !icd10key$phecode %in% norollup)
+        					& nchar(pcodes) > nchar(pcodes[p]))]
+        					& !icd10key$phecode %in% norollup)
     } else {
         iSub <- which(icd10key$phecode %in% pcodes[grep(paste0("^",pcodes[p],"\\."),pcodes)]
-        				& !icd10key$phecode %in% norollup)
+        					& !icd10key$phecode %in% norollup)
     }
     if(length(iSub) == 0) next
     iTop <- icd10key$ICD10[which(icd10key$phecode == pcodes[p])]
